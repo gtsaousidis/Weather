@@ -29,8 +29,6 @@ public class CurrentWeather {
         return mIcon;
     }
 
-
-
     public void setIcon(String icon) {
         mIcon = icon;
     }
@@ -91,8 +89,8 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public double getTemparture() {
-        return mTemparture;
+    public int getTemparture() {
+        return (int)Math.round((mTemparture-32)*5/9);
     }
 
     public void setTemparture(double temparture) {
@@ -107,11 +105,14 @@ public class CurrentWeather {
         mHumidity = humidity;
     }
 
-    public double getPrecipChanche() {
-        return mPrecipChanche;
+    public int getPrecipChanche() {
+        double precipPercentage = mPrecipChanche * 100;
+
+        return (int)Math.round(precipPercentage);
     }
 
     public void setPrecipChanche(double precipChanche) {
+
         mPrecipChanche = precipChanche;
     }
 

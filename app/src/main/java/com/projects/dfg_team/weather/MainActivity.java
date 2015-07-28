@@ -9,6 +9,8 @@ import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
@@ -17,11 +19,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -33,10 +37,21 @@ public class MainActivity extends ActionBarActivity {
 
     private CurrentWeather mCurrentWeather;
 
+    //Adding annotation with ButterKnife //
+    @Bind(R.id.timeLabel) TextView mTimeLabel;
+    @Bind(R.id.temperatureLabel) TextView mTemperatureLabel;
+    @Bind(R.id.humidityValue) TextView mHumidityValue;
+    @Bind(R.id.precipeValue) TextView mPrecipeValue;
+    @Bind(R.id.summaryLabel) TextView mSummaryLabel;
+    @Bind(R.id.iconImageView) ImageView mIconImageView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
 
         //Getting Cordinates//
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -45,6 +60,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //Listening to hear the cordinates//
+
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -98,6 +114,13 @@ public class MainActivity extends ActionBarActivity {
 
                         if (response.isSuccessful()) {
                             mCurrentWeather = getCurrentDetails(jsonData);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateData();
+                                }
+                            });
+
                         } else {
                             alertUserAboutError();
                         }
@@ -120,6 +143,18 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "Main UI code is running!");
     }
 
+    //Refreshing weather Data//
+    private void updateData() {
+
+        //The double "" is an empty string so can pass the double value in text//
+        mTemperatureLabel.setText(mCurrentWeather.getTemparture()  + "");
+        mTimeLabel.setText("Al" + mCurrentWeather.getFormattedTime() + "it will be");
+        mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
+        mPrecipeValue.setText(mCurrentWeather.getPrecipChanche() + "%");
+        mSummaryLabel.setText(mCurrentWeather.getSummary());
+
+
+    }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{
 
