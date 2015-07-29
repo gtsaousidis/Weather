@@ -1,15 +1,19 @@
 package com.projects.dfg_team.weather;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +48,8 @@ public class MainActivity extends ActionBarActivity {
     @Bind(R.id.precipeValue) TextView mPrecipeValue;
     @Bind(R.id.summaryLabel) TextView mSummaryLabel;
     @Bind(R.id.iconImageView) ImageView mIconImageView;
-
+    @Bind(R.id.refreshImageView) ImageView mRefreshImageView;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +57,30 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mProgressBar.setVisibility(View.INVISIBLE);
 
         //Getting Cordinates//
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 20, locationListener);
+        final LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        getForecast(lm);
 
+
+        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getForecast(lm);
+            }
+        });
+
+    }
+
+    //Checking for data//
+    private void getForecast(LocationManager lm) {
+        if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 20, locationListener);
+        }
+        else{
+            Toast.makeText(this, R.string.error_gps, Toast.LENGTH_LONG).show();
+        }
     }
 
     //Listening to hear the cordinates//
@@ -90,11 +114,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void requestWeatherUpdates(double latitude, double longtitude){
 
-
-
         String forecastUrl = "https://api.forecast.io/forecast/"+ apiKey +"/"+ latitude + "," + longtitude;
 
         if (isNetworkAvailable()) {
+
+            toggleRefresh();
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(forecastUrl).build();
@@ -102,11 +126,23 @@ public class MainActivity extends ActionBarActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
+                    alertUserAboutError();
                 }
 
                 @Override
                 public void onResponse(Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleRefresh();
+                        }
+                    });
 
                     try {
                         String jsonData = response.body().string();
@@ -127,8 +163,7 @@ public class MainActivity extends ActionBarActivity {
 
                     } catch (IOException e) {
                         Log.e(TAG, "Exception caught: ", e);
-                    }
-                    catch (JSONException e){
+                    } catch (JSONException e) {
 
                         Log.e(TAG, "Exception caught: ", e);
                     }
@@ -143,16 +178,31 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "Main UI code is running!");
     }
 
+    private void toggleRefresh() {
+        if (mProgressBar.getVisibility() == View.INVISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mRefreshImageView.setVisibility(View.INVISIBLE);
+        }
+        else {
+
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mRefreshImageView.setVisibility(View.VISIBLE);
+        }
+    }
+
     //Refreshing weather Data//
     private void updateData() {
 
         //The double "" is an empty string so can pass the double value in text//
         mTemperatureLabel.setText(mCurrentWeather.getTemparture()  + "");
-        mTimeLabel.setText("Al" + mCurrentWeather.getFormattedTime() + "it will be");
+        mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be:");
         mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
         mPrecipeValue.setText(mCurrentWeather.getPrecipChanche() + "%");
         mSummaryLabel.setText(mCurrentWeather.getSummary());
 
+        Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
+
+        mIconImageView.setImageDrawable(drawable);
 
     }
 

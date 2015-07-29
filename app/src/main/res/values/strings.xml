@@ -7,4 +7,5 @@
     <string name="error_message">There was an error. Please try again!</string>
     <string name="error_ok_button_text">OK</string>
     <string name="error_toast_network">Network is unavailable</string>
+    <string name="error_gps">GPS is disabled</string>
 </resources>
