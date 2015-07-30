@@ -27,8 +27,8 @@ public class Hour {
         mSummary = summary;
     }
 
-    public double getTemperature() {
-        return mTemperature;
+    public int getTemperature() {
+        return (int)Math.round((mTemperature-32)*5/9);
     }
 
     public void setTemperature(double temperature) {

@@ -27,8 +27,8 @@ public class Daily {
         mSummary = summary;
     }
 
-    public double getTemperatureMax() {
-        return mTemperatureMax;
+    public int getTemperatureMax() {
+        return (int)Math.round((mTemperatureMax-32)*5/9);
     }
 
     public void setTemperatureMax(double temperatureMax) {
