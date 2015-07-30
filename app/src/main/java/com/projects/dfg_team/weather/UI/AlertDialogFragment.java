@@ -1,10 +1,12 @@
-package com.projects.dfg_team.weather;
+package com.projects.dfg_team.weather.UI;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import com.projects.dfg_team.weather.R;
 
 /**
  * Created by georgetsd on 26/7/15.

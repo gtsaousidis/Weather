@@ -1,4 +1,6 @@
-package com.projects.dfg_team.weather;
+package com.projects.dfg_team.weather.Weather;
+
+import com.projects.dfg_team.weather.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,7 +9,7 @@ import java.util.TimeZone;
 /**
  * Created by georgetsd on 27/7/15.
  */
-public class CurrentWeather {
+public class Current {
 
     private String mIcon;
     private long mTime;
