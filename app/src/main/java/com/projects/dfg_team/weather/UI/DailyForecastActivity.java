@@ -1,25 +1,33 @@
 package com.projects.dfg_team.weather.UI;
 
 import android.app.ListActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 
+import com.projects.dfg_team.weather.Adapters.DayAdapter;
 import com.projects.dfg_team.weather.R;
+import com.projects.dfg_team.weather.Weather.Day;
+
+import java.util.Arrays;
 
 public class DailyForecastActivity extends ListActivity {
+
+    private Day[] mDays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_forecast);
 
-        String[] daysOfTheWeek = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, daysOfTheWeek);
 
+        Intent intent = getIntent();
+        Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
+
+        mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
+
+        DayAdapter adapter = new DayAdapter(this, mDays);
         setListAdapter(adapter);
     }
 

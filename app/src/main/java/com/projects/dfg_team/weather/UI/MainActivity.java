@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,7 +19,7 @@ import android.widget.Toast;
 
 import com.projects.dfg_team.weather.R;
 import com.projects.dfg_team.weather.Weather.Current;
-import com.projects.dfg_team.weather.Weather.Daily;
+import com.projects.dfg_team.weather.Weather.Day;
 import com.projects.dfg_team.weather.Weather.Forecast;
 import com.projects.dfg_team.weather.Weather.Hour;
 import com.squareup.okhttp.Call;
@@ -46,6 +45,8 @@ public class MainActivity extends ActionBarActivity {
     String apiKey = "a5c52a34aac8cfd9804074bf46f199fa";
 
     public static  final String TAG = MainActivity.class.getSimpleName();
+    public static final String DAILY_FORECAST = "DAILY_FORECAST";
+    public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
 
     private Forecast mForecast;
 
@@ -219,7 +220,7 @@ public class MainActivity extends ActionBarActivity {
         Forecast forecast = new Forecast();
 
         forecast.setCurrent(getCurrentDetails(jsonData));
-        forecast.setDaily(getDailyForecast(jsonData));
+        forecast.setDay(getDailyForecast(jsonData));
         forecast.setHours(getHourlyForecast(jsonData));
 
         return forecast;
@@ -256,19 +257,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //Populate Days//
-    private Daily[] getDailyForecast(String jsonData) throws JSONException{
+    private Day[] getDailyForecast(String jsonData) throws JSONException{
         JSONObject forecast = new JSONObject(jsonData);
         String timezone = forecast.getString("timezone");
 
         JSONObject daily = forecast.getJSONObject("daily");
         JSONArray dailydata = daily.getJSONArray("data");
 
-        Daily[] days = new Daily[dailydata.length()];
+        Day[] days = new Day[dailydata.length()];
 
         for(int i = 0; i < dailydata.length(); i++){
 
             JSONObject jsonDay = dailydata.getJSONObject(i);
-            Daily day = new Daily();
+            Day day = new Day();
 
             day.setSummary(jsonDay.getString("summary"));
             day.setTime(jsonDay.getLong("time"));
@@ -325,19 +326,22 @@ public class MainActivity extends ActionBarActivity {
         AlertDialogFragment dialog = new AlertDialogFragment();
         dialog.show(getFragmentManager(), "error_dialog");
 
+
     }
     //Calling the DailyActivity
     @OnClick (R.id.dailyButton)
-    public void startDailyActivity(View view){
-        Intent intent = new Intent(MainActivity.this, DailyForecastActivity.class);
-        MainActivity.this.startActivity(intent);
+    public void startDailyActivity(View view) {
+        Intent intent = new Intent(this, DailyForecastActivity.class);
+        intent.putExtra(DAILY_FORECAST, mForecast.getDay());
+        startActivity(intent);
     }
 
     //Calling the HourlyActivity
 
-   /* @OnClick(R.id.hourlyButton)
+    @OnClick(R.id.hourlyButton)
     public void startHourlyActivity(View view){
-        Intent intent = new Intent(MainActivity.this, HourlyForecastActivity.class);
-        MainActivity.this.startActivity(intent);
-    }*/
+        Intent intent = new Intent(this, HourlyForecastActivity.class);
+        intent.putExtra(HOURLY_FORECAST, mForecast.getHours());
+        startActivity(intent);
+    }
 }

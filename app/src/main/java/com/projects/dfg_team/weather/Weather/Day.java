@@ -3,18 +3,20 @@ package com.projects.dfg_team.weather.Weather;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by georgetsd on 29/7/15.
  */
-public class Hour implements Parcelable {
+public class Day implements Parcelable {
 
     private long mTime;
     private String mSummary;
-    private double mTemperature;
+    private double mTemperatureMax;
     private String mIcon;
     private String mTimezone;
-
-    public Hour(){}
 
     public long getTime() {
         return mTime;
@@ -32,12 +34,12 @@ public class Hour implements Parcelable {
         mSummary = summary;
     }
 
-    public int getTemperature() {
-        return (int)Math.round((mTemperature-32)*5/9);
+    public int getTemperatureMax() {
+        return (int)Math.round((mTemperatureMax-32)*5/9);
     }
 
-    public void setTemperature(double temperature) {
-        mTemperature = temperature;
+    public void setTemperatureMax(double temperatureMax) {
+        mTemperatureMax = temperatureMax;
     }
 
     public String getIcon() {
@@ -56,6 +58,20 @@ public class Hour implements Parcelable {
         mTimezone = timezone;
     }
 
+    public int getIconId(){
+        return Forecast.getIconId(mIcon);
+    }
+
+    public String getDayOfTheWeek(){
+        SimpleDateFormat formatter = new SimpleDateFormat("EEEE");
+        formatter.setTimeZone(TimeZone.getTimeZone(mTimezone));
+        Date dateTime = new Date(mTime * 1000);
+
+        return formatter.format(dateTime);
+
+
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -63,34 +79,34 @@ public class Hour implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
         dest.writeLong(mTime);
         dest.writeString(mSummary);
-        dest.writeDouble(mTemperature);
+        dest.writeDouble(mTemperatureMax);
         dest.writeString(mIcon);
         dest.writeString(mTimezone);
+
     }
 
-    private Hour(Parcel in){
+    private Day(Parcel in){
         mTime = in.readLong();
         mSummary = in.readString();
-        mTemperature = in.readDouble();
-        mIcon = in.readString();
+        mTemperatureMax = in.readDouble();
         mTimezone = in.readString();
+        mIcon = in.readString();
     }
 
+    public Day(){}
 
-
-    public static final Creator <Hour> CREATOR = new Creator<Hour>() {
+    public static final Creator <Day> CREATOR = new Creator<Day>() {
         @Override
-        public Hour createFromParcel(Parcel source) {
-            return new Hour(source);
+        public Day createFromParcel(Parcel source) {
+            return new Day(source);
         }
 
         @Override
-        public Hour[] newArray(int size) {
-            return new Hour[size];
+        public Day[] newArray(int size) {
+            return new Day[size];
         }
     };
-
 }
+
