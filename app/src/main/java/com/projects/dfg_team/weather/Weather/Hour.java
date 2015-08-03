@@ -3,6 +3,10 @@ package com.projects.dfg_team.weather.Weather;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by georgetsd on 29/7/15.
  */
@@ -44,6 +48,10 @@ public class Hour implements Parcelable {
         return mIcon;
     }
 
+    public int getIconId(){
+        return Forecast.getIconId(mIcon);
+    }
+
     public void setIcon(String icon) {
         mIcon = icon;
     }
@@ -54,6 +62,13 @@ public class Hour implements Parcelable {
 
     public void setTimezone(String timezone) {
         mTimezone = timezone;
+    }
+
+    public String getHour(){
+        SimpleDateFormat formatter = new SimpleDateFormat("h a");
+        Date dateHoursTime = new Date(mTime * 1000);
+
+        return formatter.format(dateHoursTime);
     }
 
     @Override
